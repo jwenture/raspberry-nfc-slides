@@ -39,9 +39,18 @@ raspberry-nfc-slides/
 │   │   ├── tag_mapper.py      # tags.json loader, lookup, mtime-based reload
 │   │   └── slideshow.py       # VLC controller (MediaListPlayer, idle, playlist)
 │   ├── sync/
-│   │   └── __init__.py        # (sync_all.py and transcode.py not yet created)
+│   │   ├── __init__.py
+│   │   ├── sync_all.py        # Background: rclone + ffmpeg transcode for all tags
+│   │   └── transcode.py       # ffmpeg wrapper: video transcode + image resize
 │   ├── scripts/
-│   │   └── generate_assets.py # Generates idle.png and error.png
+│   │   ├── generate_assets.py # Generates idle.png and error.png
+│   │   ├── install.sh         # One-shot setup script
+│   │   ├── setup_rclone.sh    # Interactive rclone config for Google Drive
+│   │   ├── xorg-kiosk.service # Minimal X server systemd unit
+│   │   ├── matchbox.service   # Matchbox window manager systemd unit
+│   │   ├── nfc-slideshow.service # Foreground app systemd unit
+│   │   ├── nfc-sync.service   # Background sync systemd unit
+│   │   └── nfc-sync.timer     # Daily sync trigger
 │   ├── cache/                 # Processed media (cache/<uid>/processed/)
 │   └── logs/                  # Rotating logs (5MB x 3 files)
 └── nfc-test/
@@ -54,8 +63,8 @@ raspberry-nfc-slides/
 |-------|-------------|--------|
 | 1 | Core playback (VLC, no NFC, no sync) | Code written, untested on Pi |
 | 2 | NFC integration | Code written (nfc_reader, tag_mapper, main state machine), untested on Pi |
-| 3 | Background sync (rclone + ffmpeg) | Not started |
-| 4 | Kiosk mode (systemd, install.sh) | Not started |
+| 3 | Background sync (rclone + ffmpeg) | Code written and tested (transcode with real ffmpeg, sync_all with mocks) |
+| 4 | Kiosk mode (systemd, install.sh) | Code written, untested on Pi |
 | 5 | Hardening (watchdog, read-only root) | Not started |
 
 See `plan.md` Section 13 for detailed checklist and Section 15 for file-by-file status.
@@ -213,7 +222,7 @@ Documented in `installation_notes.txt`; these were discovered during actual Pi s
 
 2. **`matchbox-window-manager` availability on Bookworm**: Unverified. If not available, fallback to `openbox` or no WM. Check with `apt-cache policy matchbox-window-manager`.
 
-3. **HEIC decode in ffmpeg**: Unverified. `libheif-examples` installed via apt provides `heif-convert`. If ffmpeg lacks HEIC support, `transcode.py` (when implemented) should use `heif-convert` as a pre-step.
+3. **HEIC decode in ffmpeg**: `transcode.py` tries ffmpeg first, then falls back to `heif-convert` (from `libheif-examples`) as a pre-step if ffmpeg fails on `.heic` files. The fallback converts HEIC → temp PNG → ffmpeg resize → output JPG.
 
 4. **VLC stop→play transition**: May cause a brief black flash. Not yet tested. Potential fix: use `set_media` without stopping first, or accept the flash.
 
@@ -239,6 +248,7 @@ Three issues found and fixed in `plan.md` during Phase 1 review:
 - **(F)** Removed invalid `-nocursor` from Xorg ExecStart — cursor hiding is matchbox's job
 - **(G)** Added `getty@tty1.service` override with `--autologin john` to install.sh — `raspi-config` alone doesn't configure auto-login
 - **(H)** Added X socket wait (`/tmp/.X11-unix/X0`) to matchbox.service `ExecStartPre` — prevents race with Xorg startup
+- **(I)** Removed invalid `auto_rotate=1` from ffmpeg `-vf` filter chain — it's not a valid filter, ffmpeg auto-rotates by default. Added `-pix_fmt yuv420p` to video transcode for H.264 baseline chroma compatibility.
 
 ## What Not to Do
 

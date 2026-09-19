@@ -1,0 +1,17 @@
+[Unit]
+Description=NFC Slideshow Player
+After=xorg-kiosk.service matchbox.service
+Requires=xorg-kiosk.service matchbox.service
+
+[Service]
+ExecStartPre=/bin/bash -c 'until [ -S /tmp/.X11-unix/X0 ]; do sleep 0.5; done'
+ExecStart=/home/john/nfc-slideshow/venv/bin/python3 /home/john/nfc-slideshow/src/main.py
+WorkingDirectory=/home/john/nfc-slideshow
+Restart=always
+RestartSec=3
+User=john
+Environment=DISPLAY=:0
+Environment=PYTHONUNBUFFERED=1
+
+[Install]
+WantedBy=multi-user.target

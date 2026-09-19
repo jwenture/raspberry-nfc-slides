@@ -1,0 +1,10 @@
+[Unit]
+Description=Daily NFC Slideshow Media Sync
+
+[Timer]
+OnCalendar=*-*-* 03:00:00
+Persistent=true
+Unit=nfc-sync.service
+
+[Install]
+WantedBy=timers.target

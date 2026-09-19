@@ -2,10 +2,11 @@ import sys
 from pathlib import Path
 
 project_root = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(project_root))
 config_dir = project_root / "config"
 
 
-def generate_image(text: str, output_path: Path, width: int = 800, height: int = 480) -> None:
+def generate_image(text: str, output_path: Path, width: int, height: int) -> None:
     from PIL import Image, ImageDraw, ImageFont
 
     img = Image.new("RGB", (width, height), color="black")
@@ -32,8 +33,11 @@ def generate_image(text: str, output_path: Path, width: int = 800, height: int =
 
 
 def main() -> None:
-    generate_image("Tap a card", config_dir / "idle.png")
-    generate_image("Unknown card", config_dir / "error.png")
+    from src.config import Config
+
+    config = Config.load(config_dir / "settings.yaml")
+    generate_image("Tap a card", config_dir / "idle.png", config.screen.width, config.screen.height)
+    generate_image("Unknown card", config_dir / "error.png", config.screen.width, config.screen.height)
 
 
 if __name__ == "__main__":

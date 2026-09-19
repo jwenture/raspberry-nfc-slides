@@ -1,0 +1,16 @@
+[Unit]
+Description=Matchbox Window Manager (Kiosk)
+After=xorg-kiosk.service
+Requires=xorg-kiosk.service
+
+[Service]
+ExecStartPre=/bin/bash -c 'until [ -S /tmp/.X11-unix/X0 ]; do sleep 0.5; done'
+ExecStartPre=/usr/bin/xset -dpms s off
+ExecStart=/usr/bin/matchbox-window-manager -use_titlebar no -use_cursor no
+Restart=always
+RestartSec=2
+User=john
+Environment=DISPLAY=:0
+
+[Install]
+WantedBy=multi-user.target

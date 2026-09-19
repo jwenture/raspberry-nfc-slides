@@ -1,0 +1,14 @@
+[Unit]
+Description=NFC Slideshow Media Sync (oneshot)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+ExecStart=/home/john/nfc-slideshow/venv/bin/python3 /home/john/nfc-slideshow/sync/sync_all.py
+WorkingDirectory=/home/john/nfc-slideshow
+User=john
+Environment=PYTHONUNBUFFERED=1
+
+[Install]
+WantedBy=multi-user.target

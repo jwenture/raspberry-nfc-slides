@@ -1,0 +1,14 @@
+{
+  "tags": [
+    {
+      "uid": "04:A3:2B:1C:00:01",
+      "name": "Vacation 2024",
+      "remote_path": "gdrive:slideshows/vacation2024"
+    },
+    {
+      "uid": "04:A3:2B:1C:00:02",
+      "name": "Kids Photos",
+      "remote_path": "gdrive:slideshows/kids"
+    }
+  ]
+}

@@ -1,0 +1,33 @@
+nfc:
+  i2c_bus: 1
+  i2c_address: 0x24
+  poll_interval: 0.2
+  debounce_seconds: 1.0
+
+slideshow:
+  image_duration: 5.0
+  loop: true
+  fullscreen: true
+  idle_timeout: 30
+  tags_reload_interval: 14400
+
+paths:
+  cache_dir: "./cache"
+  rclone_config: "./config/rclone.conf"
+  idle_image: "./config/idle.png"
+  error_image: "./config/error.png"
+  log_file: "./logs/app.log"
+
+screen:
+  width: 800
+  height: 480
+
+sync:
+  log_file: "./logs/sync.log"
+  keep_raw: true
+  rclone_flags: "--transfers 4 --checkers 8 --contimeout 30s --timeout 300s --retries 3"
+  supported_image_extensions: [".jpg", ".jpeg", ".png", ".heic"]
+  supported_video_extensions: [".mp4", ".mov", ".avi", ".mkv"]
+
+vlc:
+  extra_flags: []

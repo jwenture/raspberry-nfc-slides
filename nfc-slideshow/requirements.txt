@@ -1,0 +1,5 @@
+adafruit-circuitpython-pn532>=2.0
+adafruit-blinka>=8.0
+python-vlc>=3.0
+pyyaml>=6.0
+Pillow>=10.0
